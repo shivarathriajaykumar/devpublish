@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Topics: Browse All 16 DevPublish Topics</title>
+<meta name="description" content="Browse all 16 topics on DevPublish, from JavaScript to Cybersecurity. Find articles by subject and follow the topics you care about.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="siteHeader">
+  <div class="header-inner">
+    <a class="brand" href="/index.html">
+      <img src="/assets/logohashnode.png" alt="DevPublish logo" class="brand-logo" width="40" height="40">
+      <span class="brand-name">DevPublish</span>
+    </a>
+
+    <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+      <a href="/index.html">Home</a>
+      <a href="./explore.html">Explore</a>
+      <a href="./topics.html">Topics</a>
+      <a href="./search.html">Search</a>
+      <a href="./write.html">Write</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+      </button>
+      <div class="auth-guest-only" id="guestActions">
+        <a href="login.html" class="nav-link nav-login">Login</a>
+        <span class="btn-primary-wrap"><a href="register.html" class="btn btn-primary btn-small"><span>Sign Up</span></a></span>
+      </div>
+      <div class="auth-user-only" id="userActions" hidden>
+        <button class="notif-btn" id="notifBtn" type="button" aria-label="Notifications" title="Notifications">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-badge" id="notifBadge" hidden>0</span>
+        </button>
+        <div class="avatar-menu">
+          <button class="avatar-btn" id="avatarBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+            <span class="avatar-circle" id="avatarCircle">·</span>
+          </button>
+          <div class="avatar-dropdown" id="avatarDropdown" hidden>
+            <a href="profile.html" id="dropdownProfileLink">Profile</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="settings.html">Settings</a>
+            <div class="dropdown-divider"></div>
+            <button type="button" id="logoutBtn">Log out</button>
+          </div>
+        </div>
+      </div>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- PAGE HERO -->
+  <section class="topics-hero">
+    <span class="eyebrow">All topics</span>
+    <h1>Sixteen topics, one home page each.</h1>
+    <p class="hero-sub">Every article on DevPublish belongs to a topic. Pick one below to read what's been published there, or write the next piece yourself.</p>
+  </section>
+
+  <!-- TOPIC GROUPS -->
+  <section class="topics-body">
+
+    <div class="topic-group">
+      <h2>Languages</h2>
+      <div class="topics-grid topics-grid-detailed">
+        <a class="topic-pill topic-pill-lg" href="topics.html#javascript" id="javascript">
+          <span class="topic-name">JavaScript</span>
+          <span class="topic-desc">The language of the browser, and increasingly of the server too.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#python" id="python">
+          <span class="topic-name">Python</span>
+          <span class="topic-desc">Scripting, data work, backends and everything in between.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.htmlj#java" id="java">
+          <span class="topic-name">Java</span>
+          <span class="topic-desc">Enterprise systems, Android, and the JVM ecosystem around them.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#cpp" id="cpp">
+          <span class="topic-name">C++</span>
+          <span class="topic-desc">Performance-critical code, systems programming and game engines.</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="topic-group">
+      <h2>Frameworks &amp; runtimes</h2>
+      <div class="topics-grid topics-grid-detailed">
+        <a class="topic-pill topic-pill-lg" href="topics.html#react" id="react">
+          <span class="topic-name">React</span>
+          <span class="topic-desc">Component patterns, hooks, state and the wider React ecosystem.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#nodejs" id="nodejs">
+          <span class="topic-name">Node.js</span>
+          <span class="topic-desc">Server-side JavaScript, APIs, tooling and package ecosystems.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#django" id="django">
+          <span class="topic-name">Django</span>
+          <span class="topic-desc">Python's batteries-included framework for building web applications.</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="topic-group">
+      <h2>Fields</h2>
+      <div class="topics-grid topics-grid-detailed">
+        <a class="topic-pill topic-pill-lg" href="topics.html#ai" id="ai">
+          <span class="topic-name">AI</span>
+          <span class="topic-desc">Applied artificial intelligence, tools, and how it changes how we build.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#ml" id="ml">
+          <span class="topic-name">Machine Learning</span>
+          <span class="topic-desc">Models, training, data pipelines and the math underneath them.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#webdev" id="webdev">
+          <span class="topic-name">Web Development</span>
+          <span class="topic-desc">Front end, back end, and the practices that hold a web project together.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#devops" id="devops">
+          <span class="topic-name">DevOps</span>
+          <span class="topic-desc">CI/CD, infrastructure as code, and keeping systems running.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#cloud" id="cloud">
+          <span class="topic-name">Cloud</span>
+          <span class="topic-desc">Cloud platforms, architecture and the tradeoffs of running there.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#security" id="security">
+          <span class="topic-name">Cybersecurity</span>
+          <span class="topic-desc">Threats, defenses, and writing software that holds up under attack.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#databeses" id="databases">
+          <span class="topic-name">Databases</span>
+          <span class="topic-desc">Schema design, query performance, and choosing the right store.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#uiux" id="uiux">
+          <span class="topic-name">UI/UX</span>
+          <span class="topic-desc">Interface design and the research behind decisions that feel obvious later.</span>
+        </a>
+        <a class="topic-pill topic-pill-lg" href="topics.html#career" id="career">
+          <span class="topic-name">Career</span>
+          <span class="topic-desc">Interviews, growth, and the working life around writing code.</span>
+        </a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- GAP NOTICE -->
+  <section class="topics-note">
+    <div class="mono-tag">$ topics --status</div>
+    <p>Article counts, top authors and per-topic feeds for each of these pages are not published in this document yet. Once articles start coming in, each topic page here will show its own list, ranked the same way Explore is: by the views, likes and comments an article earns.</p>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <h2>Don't see your topic covered yet?</h2>
+    <p>Publish the first article. Every topic page starts somewhere.</p>
+    <div class="cta-actions">
+      <span class="btn-primary-wrap"><a href="write.html" class="btn btn-primary"><span>Write</span></a></span>
+      <a href="explore.html" class="btn btn-secondary">Explore</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="/assets/logohashnode.png" alt="DevPublish logo" class="brand-logo" width="40" height="40">
+      <span class="brand-name">DevPublish</span>
+      <p>A publishing platform for developers, students and technical writers.</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer navigation">
+      <a href="/index.html">Home</a>
+      <a href="./explore.html">Explore</a>
+      <a href="./topics.html">Topics</a>
+      <a href="./search.html">Search</a>
+      <a href="./write.html">Write</a>
+      <a href="./login.html">Login</a>
+      <a href="./register.html">Sign Up</a>
+    </nav>
+  </div>
+  <p class="footer-bottom">© 2026 DevPublish. Built for the developer community.</p>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/script.js"></script>
+<div data-sp-credit style="text-align:center;padding:16px 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;color:inherit"><a href="https://simplepath.ai/?utm_source=customer-site&utm_medium=referral&utm_campaign=made-with" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Made with <strong style="font-weight:600">SimplePath</strong></a></div>
+</body>
+</html>
