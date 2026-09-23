@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Article | DevPublish</title>
+
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+
+        <div class="header-container">
+
+            <a href="../index.html" class="logo">
+                DevPublish
+            </a>
+
+            <nav class="main-nav">
+                <a href="../index.html">Home</a>
+                <a href="explore.html">Explore</a>
+                <a href="topics.html">Topics</a>
+            </nav>
+
+            <div class="header-actions">
+
+                <div id="guestActions">
+
+                    <a href="login.html" class="btn btn-secondary">
+                        Login
+                    </a>
+
+                    <a href="register.html" class="btn btn-primary">
+                        Get Started
+                    </a>
+
+                </div>
+
+                <div id="userActions" hidden>
+
+                    <div class="avatar-wrapper">
+
+                        <button id="avatarCircle" class="avatar-circle">
+                            U
+                        </button>
+
+                        <div class="avatar-dropdown">
+
+                            <a href="profile.html">
+                                Profile
+                            </a>
+
+                            <a href="dashboard.html">
+                                Dashboard
+                            </a>
+
+                            <a href="settings.html">
+                                Settings
+                            </a>
+
+                            <button id="logoutBtn">
+                                Log out
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <section class="editor-page">
+
+            <div class="editor-container">
+
+                <div class="editor-header">
+
+                    <h1>Edit Article</h1>
+
+                    <p>
+                        Update your article and save your changes.
+                    </p>
+
+                </div>
+
+
+                <div id="editorAlert"></div>
+
+
+                <form id="editArticleForm">
+
+                    <div class="form-group">
+
+                        <label for="title">
+                            Title
+                        </label>
+
+                        <input
+                            type="text"
+                            id="title"
+                            name="title"
+                            placeholder="Enter article title"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="slug">
+                            Slug
+                        </label>
+
+                        <input
+                            type="text"
+                            id="slug"
+                            name="slug"
+                            placeholder="article-slug"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="excerpt">
+                            Excerpt
+                        </label>
+
+                        <textarea
+                            id="excerpt"
+                            name="excerpt"
+                            rows="3"
+                            placeholder="Short description of your article"
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="tags">
+                            Tags
+                        </label>
+
+                        <input
+                            type="text"
+                            id="tags"
+                            name="tags"
+                            placeholder="python, javascript, web"
+                        >
+
+                        <small>
+                            Separate multiple tags with commas.
+                        </small>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="coverImage">
+                            Cover Image URL
+                        </label>
+
+                        <input
+                            type="url"
+                            id="coverImage"
+                            name="coverImage"
+                            placeholder="https://example.com/image.jpg"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="content">
+                            Content
+                        </label>
+
+                        <textarea
+                            id="content"
+                            name="content"
+                            rows="15"
+                            placeholder="Write your article..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="status">
+                            Status
+                        </label>
+
+                        <select id="status" name="status">
+
+                            <option value="draft">
+                                Draft
+                            </option>
+
+                            <option value="published">
+                                Published
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="editor-actions">
+
+                        <a
+                            href="explore.html"
+                            class="btn btn-secondary"
+                        >
+                            Cancel
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            id="updateButton"
+                        >
+                            Save Changes
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer class="site-footer">
+
+        <div class="footer-container">
+
+            <p>
+                © 2026 DevPublish. A publishing platform for developers,
+                students and technical writers.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <script src="../js/auth.js"></script>
+
+    <script>
+
+        const EDIT_API_BASE_URL =
+    "http://localhost:5000/api";
+
+        const form =
+            document.getElementById("editArticleForm");
+
+        const alertBox =
+            document.getElementById("editorAlert");
+
+        const updateButton =
+            document.getElementById("updateButton");
+
+
+        function showAlert(message, type = "error") {
+
+            alertBox.innerHTML = `
+                <div class="form-alert ${type}">
+                    ${escapeHtml(message)}
+                </div>
+            `;
+
+        }
+
+
+        function escapeHtml(value) {
+
+            const div =
+                document.createElement("div");
+
+            div.textContent =
+                value || "";
+
+            return div.innerHTML;
+
+        }
+
+
+        async function loadArticle() {
+
+            try {
+
+                const params =
+                    new URLSearchParams(
+                        window.location.search
+                    );
+
+                const id =
+                    params.get("id");
+
+
+                if (!id) {
+
+                    showAlert(
+                        "No article ID was provided."
+                    );
+
+                    updateButton.disabled = true;
+
+                    return;
+                }
+
+
+                const token =
+                    getToken();
+
+
+                if (!token) {
+
+                    window.location.href =
+                        `login.html?redirect=${encodeURIComponent(
+                            window.location.pathname +
+                            window.location.search
+                        )}`;
+
+                    return;
+                }
+
+
+                /*
+                 * We use the existing GET /posts/:slug
+                 * API to load the article.
+                 *
+                 * For now, the URL will contain both
+                 * the article ID and slug.
+                 */
+
+                const slug =
+                    params.get("slug");
+
+
+                if (!slug) {
+
+                    showAlert(
+                        "Article slug is missing."
+                    );
+
+                    updateButton.disabled = true;
+
+                    return;
+                }
+
+
+                const response =
+                    await fetch(
+                        `${EDIT_API_BASE_URL}/posts/${encodeURIComponent(slug)}`
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Unable to load article"
+                    );
+
+                }
+
+
+                const post =
+                    data.post;
+
+
+                /*
+                 * Security check:
+                 * Only the author should be allowed
+                 * to edit this article.
+                 */
+
+                const currentUser =
+                    getCurrentUser();
+
+
+                const currentUserId =
+    currentUser?._id || currentUser?.id;
+
+if (
+    !currentUserId ||
+    currentUserId !== post.author._id
+) {
+
+                    showAlert(
+                        "You are not allowed to edit this article."
+                    );
+
+                    updateButton.disabled = true;
+
+                    return;
+                }
+
+
+                document.getElementById("title").value =
+                    post.title || "";
+
+                document.getElementById("slug").value =
+                    post.slug || "";
+
+                document.getElementById("excerpt").value =
+                    post.excerpt || "";
+
+                document.getElementById("coverImage").value =
+                    post.coverImage || "";
+
+                document.getElementById("content").value =
+                    post.content || "";
+
+                document.getElementById("status").value =
+                    post.status || "draft";
+
+
+                document.getElementById("tags").value =
+                    (post.tags || []).join(", ");
+
+
+            } catch (error) {
+
+                console.error(
+                    "Load article error:",
+                    error
+                );
+
+                showAlert(
+                    "Unable to load article."
+                );
+
+            }
+
+        }
+
+
+        form.addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const params =
+                    new URLSearchParams(
+                        window.location.search
+                    );
+
+                const id =
+                    params.get("id");
+
+
+                const title =
+                    document.getElementById("title")
+                        .value.trim();
+
+                const slug =
+                    document.getElementById("slug")
+                        .value.trim()
+                        .toLowerCase();
+
+                const excerpt =
+                    document.getElementById("excerpt")
+                        .value.trim();
+
+                const coverImage =
+                    document.getElementById("coverImage")
+                        .value.trim();
+
+                const content =
+                    document.getElementById("content")
+                        .value.trim();
+
+                const status =
+                    document.getElementById("status")
+                        .value;
+
+
+                const tags =
+                    document.getElementById("tags")
+                        .value
+                        .split(",")
+                        .map(tag => tag.trim())
+                        .filter(tag => tag);
+
+
+                if (!title || !slug || !content) {
+
+                    showAlert(
+                        "Title, slug and content are required."
+                    );
+
+                    return;
+                }
+
+
+                try {
+
+                    updateButton.disabled = true;
+
+                    updateButton.textContent =
+                        "Saving...";
+
+
+                    const token =
+                        getToken();
+
+
+                    const response =
+                        await fetch(
+                            `${EDIT_API_BASE_URL}/posts/${id}`,
+                            {
+                                method: "PUT",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json",
+
+                                    "Authorization":
+                                        `Bearer ${token}`
+                                },
+
+                                body: JSON.stringify({
+                                    title,
+                                    slug,
+                                    excerpt,
+                                    coverImage,
+                                    content,
+                                    tags,
+                                    status
+                                })
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.message ||
+                            "Unable to update article"
+                        );
+
+                    }
+
+
+                    showAlert(
+                        "Article updated successfully!",
+                        "success"
+                    );
+
+
+                    setTimeout(function() {
+
+                        window.location.href =
+                            `article.html?slug=${encodeURIComponent(
+                                data.post.slug
+                            )}`;
+
+                    }, 800);
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Update article error:",
+                        error
+                    );
+
+                    showAlert(
+                        error.message ||
+                        "Unable to update article."
+                    );
+
+
+                    updateButton.disabled = false;
+
+                    updateButton.textContent =
+                        "Save Changes";
+
+                }
+
+            }
+        );
+
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            loadArticle
+        );
+
+    </script>
+
+</body>
+</html>

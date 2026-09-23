@@ -140,50 +140,158 @@
   <p class="footer-bottom">© 2026 DevPublish. Built for the developer community.</p>
 </footer>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<!-- <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script> -->
 <script src="/js/auth.js"></script>
 <script src="/js/script.js"></script>
 <script>
 (function () {
-  "use strict";
-  document.addEventListener('dp:authchange', function (e) {
-    if (e.detail.user) {
-      var params = new URLSearchParams(location.search);
-      location.href = params.get('redirect') || 'dashboard.html';
-    }
-  });
+    "use strict";
 
-  var form = document.getElementById('loginForm');
-  var alertBox = document.getElementById('loginAlert');
-  var submitBtn = document.getElementById('loginSubmit');
-  if (!form) return;
+    const form = document.getElementById("loginForm");
+    const alertBox = document.getElementById("loginAlert");
+    const submitBtn = document.getElementById("loginSubmit");
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    dp.hideAlert(alertBox);
-    var identifier = form.identifier.value.trim();
-    var password = form.password.value;
-    var remember = form.remember.checked;
-    if (!identifier || !password) { dp.showAlert(alertBox, 'Please enter your email/username and password.'); return; }
+    if (!form) return;
 
-    dp.setBtnLoading(submitBtn, 'Signing in...');
-    var persistence = remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
-    dp.auth.setPersistence(persistence).then(function () {
-      return dp.resolveLoginEmail(identifier);
-    }).then(function (email) {
-      if (!email) { var e2 = new Error('no account'); e2.code = 'auth/invalid-credential'; throw e2; }
-      return dp.auth.signInWithEmailAndPassword(email, password);
-    }).then(function () {
-      var params = new URLSearchParams(location.search);
-      var redirect = params.get('redirect');
-      location.href = redirect ? redirect : 'dashboard.html';
-    }).catch(function () {
-      dp.resetBtn(submitBtn);
-      dp.showAlert(alertBox, 'Invalid username/email or password.');
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        // Hide previous alert
+        alertBox.hidden = true;
+        alertBox.textContent = "";
+
+        const identifier = form.identifier.value.trim().toLowerCase();
+        const password = form.password.value;
+        const remember = form.remember.checked;
+
+        // Basic validation
+        if (!identifier || !password) {
+            showMessage(
+                "Please enter your email and password."
+            );
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            // Send login request to DevPublish backend
+            const response = await fetch(
+                "http://localhost:5000/api/users/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: identifier,
+                        password: password
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            // Backend returned an error
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Login failed"
+                );
+            }
+
+            console.log("Login successful:", data);
+
+            /*
+             * Store JWT token
+             *
+             * localStorage = stays after browser closes
+             * sessionStorage = removed when browser session ends
+             */
+            if (remember) {
+                localStorage.setItem("devpublish_token", data.token);
+                localStorage.setItem(
+                    "devpublish_user",
+                    JSON.stringify(data.user)
+                );
+
+                sessionStorage.removeItem("devpublish_token");
+                sessionStorage.removeItem("devpublish_user");
+
+            } else {
+                sessionStorage.setItem(
+                    "devpublish_token",
+                    data.token
+                );
+
+                sessionStorage.setItem(
+                    "devpublish_user",
+                    JSON.stringify(data.user)
+                );
+
+                localStorage.removeItem("devpublish_token");
+                localStorage.removeItem("devpublish_user");
+            }
+
+            showMessage(
+                "Login successful! Redirecting...",
+                true
+            );
+
+            // Redirect
+            setTimeout(function () {
+
+                const params =
+                    new URLSearchParams(window.location.search);
+
+                const redirect =
+                    params.get("redirect");
+
+                window.location.href = redirect || "../index.html";
+
+            }, 800);
+
+        } catch (error) {
+
+            console.error("Login error:", error);
+
+            showMessage(
+                error.message ||
+                "Invalid email or password."
+            );
+
+        } finally {
+            setLoading(false);
+        }
     });
-  });
+
+    function showMessage(message, success = false) {
+
+        alertBox.textContent = message;
+        alertBox.hidden = false;
+
+        if (success) {
+            alertBox.classList.add("success");
+        } else {
+            alertBox.classList.remove("success");
+        }
+    }
+
+    function setLoading(loading) {
+
+        submitBtn.disabled = loading;
+
+        const span =
+            submitBtn.querySelector("span");
+
+        if (loading) {
+            span.textContent = "Signing in...";
+        } else {
+            span.textContent = "Log In";
+        }
+    }
+
 })();
 </script>
 <div data-sp-credit style="text-align:center;padding:16px 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;color:inherit"><a href="https://simplepath.ai/?utm_source=customer-site&utm_medium=referral&utm_campaign=made-with" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Made with <strong style="font-weight:600">SimplePath</strong></a></div>

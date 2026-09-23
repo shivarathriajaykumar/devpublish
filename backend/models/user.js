@@ -24,15 +24,19 @@ const userSchema = new mongoose.Schema(
             lowercase: true
         },
 
-        password: {
-            type: String,
-            required: true
-        },
+        password: { type: String, required: true },
 
-        bio: {
-            type: String,
-            default: ""
-        },
+resetPasswordToken: {
+    type: String,
+    default: null
+},
+
+resetPasswordExpires: {
+    type: Date,
+    default: null
+},
+
+bio: { type: String, default: "" },
 
         profileImage: {
             type: String,

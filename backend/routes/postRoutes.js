@@ -1,18 +1,24 @@
 const express = require("express");
-
 const {
     createPost,
-    getPosts
+    getPosts,
+    getPostBySlug,
+    updatePost,
+    deletePost
 } = require("../controllers/postController");
 
 const protect = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Create a new post - protected
 router.post("/", protect, createPost);
 
-// Get all posts - public
 router.get("/", getPosts);
+
+router.put("/:id", protect, updatePost);
+
+router.delete("/:id", protect, deletePost);
+
+router.get("/:slug", getPostBySlug);
 
 module.exports = router;

@@ -166,62 +166,167 @@
   <p class="footer-bottom">© 2026 DevPublish. Built for the developer community.</p>
 </footer>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<!-- <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script> -->
 <script src="/js/auth.js"></script>
 <script src="/js/script.js"></script>
 <script>
 (function () {
-  "use strict";
-  document.addEventListener('dp:authchange', function (e) {
-    if (e.detail.user) {
-      var params = new URLSearchParams(location.search);
-      location.href = params.get('redirect') || 'dashboard.html';
-    }
-  });
+    "use strict";
 
-  var form = document.getElementById('registerForm');
-  var alertBox = document.getElementById('registerAlert');
-  var submitBtn = document.getElementById('registerSubmit');
-  if (!form) return;
+    const form = document.getElementById("registerForm");
+    const alertBox = document.getElementById("registerAlert");
+    const submitBtn = document.getElementById("registerSubmit");
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    dp.hideAlert(alertBox);
-    var name = form.name.value.trim();
-    var username = dp.slugifyUsername(form.username.value);
-    var email = form.email.value.trim();
-    var password = form.password.value;
-    var confirmPassword = form.confirmPassword.value;
+    if (!form) return;
 
-    if (!name) { dp.showAlert(alertBox, 'Please enter your name.'); return; }
-    if (!username || username.length < 3) { dp.showAlert(alertBox, 'Username must be at least 3 characters (letters, numbers, underscore only).'); return; }
-    if (!dp.isValidEmail(email)) { dp.showAlert(alertBox, 'Please enter a valid email address.'); return; }
-    if (password.length < 8) { dp.showAlert(alertBox, 'Password must be at least 8 characters.'); return; }
-    if (password !== confirmPassword) { dp.showAlert(alertBox, 'Passwords do not match.'); return; }
-    if (!form.terms.checked) { dp.showAlert(alertBox, 'Please agree to the terms to continue.'); return; }
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-    dp.setBtnLoading(submitBtn, 'Checking username...');
-    dp.isUsernameTaken(username).then(function (taken) {
-      if (taken) { dp.resetBtn(submitBtn); dp.showAlert(alertBox, 'Username is already taken.'); return; }
-      dp.setBtnLoading(submitBtn, 'Creating account...');
-      return dp.auth.createUserWithEmailAndPassword(email, password).then(function (cred) {
-        return dp.createProfile(cred.user, { name: name, username: username, email: email });
-      }).then(function () {
-        dp.showAlert(alertBox, 'Account created! Taking you to your dashboard...', 'success');
-        setTimeout(function () { location.href = 'dashboard.html'; }, 900);
-      });
-    }).catch(function (err) {
-      dp.resetBtn(submitBtn);
-      var code = err && err.code;
-      if (code === 'auth/email-already-in-use') { dp.showAlert(alertBox, 'An account with this email already exists.'); }
-      else if (code === 'auth/invalid-email') { dp.showAlert(alertBox, 'Please enter a valid email address.'); }
-      else if (code === 'auth/weak-password') { dp.showAlert(alertBox, 'Please choose a stronger password.'); }
-      else if (code === 'auth/admin-restricted-operation') { dp.showAlert(alertBox, 'Sign-ups are not open on DevPublish yet. Please check back soon.'); }
-      else { dp.showAlert(alertBox, 'Unable to create account. Please try again.'); }
+        // Hide previous message
+        if (typeof dp !== "undefined" && dp.hideAlert) {
+            dp.hideAlert(alertBox);
+        } else {
+            alertBox.hidden = true;
+        }
+
+        // Get form values
+        const name = form.name.value.trim();
+        const username = form.username.value.trim().toLowerCase();
+        const email = form.email.value.trim().toLowerCase();
+        const password = form.password.value;
+        const confirmPassword = form.confirmPassword.value;
+        const termsAccepted = form.terms.checked;
+
+        // Frontend validation
+        if (!name) {
+            showMessage("Please enter your name.");
+            return;
+        }
+
+        if (!username || username.length < 3) {
+            showMessage(
+                "Username must be at least 3 characters."
+            );
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            showMessage(
+                "Username can contain only letters, numbers and underscore."
+            );
+            return;
+        }
+
+        if (!email || !isValidEmail(email)) {
+            showMessage("Please enter a valid email address.");
+            return;
+        }
+
+        if (password.length < 8) {
+            showMessage("Password must be at least 8 characters.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            showMessage("Passwords do not match.");
+            return;
+        }
+
+        if (!termsAccepted) {
+            showMessage("Please agree to the terms to continue.");
+            return;
+        }
+
+        // Loading state
+        setLoading(true);
+
+        try {
+            // Send registration data to our backend
+            const response = await fetch(
+                "http://localhost:5000/api/users/register",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        username: username,
+                        email: email,
+                        password: password
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Registration failed"
+                );
+            }
+
+            // Success
+            showMessage(
+                "Account created successfully! Redirecting to login...",
+                true
+            );
+
+            // Go to login page
+            setTimeout(function () {
+                window.location.href = "login.html";
+            }, 1000);
+
+        } catch (error) {
+            console.error("Registration error:", error);
+
+            showMessage(
+                error.message ||
+                "Unable to create account. Please try again."
+            );
+
+        } finally {
+            setLoading(false);
+        }
     });
-  });
+
+    function showMessage(message, success = false) {
+
+        if (typeof dp !== "undefined" && dp.showAlert) {
+
+            dp.showAlert(
+                alertBox,
+                message,
+                success ? "success" : "error"
+            );
+
+        } else {
+
+            alertBox.textContent = message;
+            alertBox.hidden = false;
+        }
+    }
+
+    function setLoading(loading) {
+
+        submitBtn.disabled = loading;
+
+        if (loading) {
+            submitBtn.querySelector("span").textContent =
+                "Creating account...";
+        } else {
+            submitBtn.querySelector("span").textContent =
+                "Create account";
+        }
+    }
+
+    function isValidEmail(email) {
+
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
 })();
 </script>
 <div data-sp-credit style="text-align:center;padding:16px 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;color:inherit"><a href="https://simplepath.ai/?utm_source=customer-site&utm_medium=referral&utm_campaign=made-with" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Made with <strong style="font-weight:600">SimplePath</strong></a></div>

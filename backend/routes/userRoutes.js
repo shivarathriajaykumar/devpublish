@@ -4,7 +4,10 @@ const protect = require("../middleware/authMiddleware");
 const {
     registerUser,
     getUsers,
-    loginUser
+    loginUser,
+    forgotPassword,
+    resetPassword
+
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -14,6 +17,10 @@ router.post("/register", registerUser);
 
 // Login
 router.post("/login", loginUser);
+
+router.post("/forgot-password", forgotPassword);
+
+router.post("/reset-password", resetPassword);
 
 // Get all users
 router.get("/", getUsers);
