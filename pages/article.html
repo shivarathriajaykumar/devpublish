@@ -160,7 +160,7 @@
 
                 // Request article from backend
                 const response = await fetch(
-                    `http://localhost:5000/api/posts/${encodeURIComponent(slug)}`
+                    `https://devpublish-8ww4nfm8u-shivarathriajay72-9888.vercel.app/api/posts/${encodeURIComponent(slug)}`
                 );
 
 
@@ -415,7 +415,7 @@ const isAuthor =
                     // Get the article first so we know its ID
                     const articleResponse =
                         await fetch(
-                            `http://localhost:5000/api/posts/${encodeURIComponent(slug)}`
+                            `https://devpublish-8ww4nfm8u-shivarathriajay72-9888.vercel.app/api/posts/${encodeURIComponent(slug)}`
                         );
 
                     const articleData =
@@ -433,7 +433,7 @@ const isAuthor =
 
                     const deleteResponse =
                         await fetch(
-                            `http://localhost:5000/api/posts/${post._id}`,
+                            `https://devpublish-8ww4nfm8u-shivarathriajay72-9888.vercel.app/api/posts/${post._id}`,
                             {
                                 method: "DELETE",
 

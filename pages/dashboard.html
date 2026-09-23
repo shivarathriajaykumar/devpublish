@@ -147,28 +147,95 @@
   <p class="footer-bottom">© 2026 DevPublish. Built for the developer community.</p>
 </footer>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 <script src="../js/auth.js"></script>
 <script src="../js/script.js"></script>
 <script>
-(function () {
-  "use strict";
-  dp.requireAuth(function (user) {
-    document.getElementById('followersCard').addEventListener('click', function () { location.href = 'followers.html'; });
-    document.getElementById('followingCard').addEventListener('click', function () { location.href = 'followers.html#following'; });
+document.addEventListener("DOMContentLoaded", async function () {
+    const token =
+        localStorage.getItem("devpublish_token") ||
+        sessionStorage.getItem("devpublish_token");
 
-    dp.getProfile(user.uid).then(function (profile) {
-      document.getElementById('dashGreeting').textContent = 'Welcome back, ' + ((profile && profile.name) || 'friend') + '.';
-      var link = document.getElementById('viewProfileLink');
-      if (profile && profile.username) link.href = 'profile.html?u=' + encodeURIComponent(profile.username);
-    });
+    const userData =
+        localStorage.getItem("devpublish_user") ||
+        sessionStorage.getItem("devpublish_user");
 
-    dp.countFollowers(user.uid).then(function (n) { document.getElementById('statFollowers').textContent = n; });
-    dp.countFollowing(user.uid).then(function (n) { document.getElementById('statFollowing').textContent = n; });
-  });
-})();
+    // If user is not logged in
+    if (!token || !userData) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        const user = JSON.parse(userData);
+
+        // Show user's name
+        document.getElementById("dashGreeting").textContent =
+            "Welcome back, " + (user.name || user.username || "friend") + ".";
+
+        // Get user's articles
+        const response = await fetch(
+            "https://devpublish-8ww4nfm8u-shivarathriajay72-9888.vercel.app/api/posts/my-posts",
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to load dashboard");
+        }
+
+        const posts = data.posts || [];
+
+        // Article counts
+        const totalArticles = posts.length;
+
+        const publishedArticles = posts.filter(
+            post => post.status === "published"
+        ).length;
+
+        const draftArticles = posts.filter(
+            post => post.status === "draft"
+        ).length;
+
+        // Total views
+        const totalViews = posts.reduce(
+            (total, post) => total + (post.views || 0),
+            0
+        );
+
+        // Total likes
+        const totalLikes = posts.reduce(
+            (total, post) => total + (post.likes || 0),
+            0
+        );
+
+        // Update dashboard
+        document.getElementById("statArticles").textContent = totalArticles;
+        document.getElementById("statPublished").textContent = publishedArticles;
+        document.getElementById("statDrafts").textContent = draftArticles;
+        document.getElementById("statViews").textContent = totalViews;
+        document.getElementById("statLikes").textContent = totalLikes;
+
+        // These features are not connected to MongoDB yet
+        document.getElementById("statComments").textContent = "0";
+        document.getElementById("statFollowers").textContent = "0";
+        document.getElementById("statFollowing").textContent = "0";
+
+    } catch (error) {
+        console.error("Dashboard error:", error);
+
+        document.getElementById("dashGreeting").textContent =
+            "Welcome back.";
+
+        alert("Unable to load dashboard data.");
+    }
+});
 </script>
 <div data-sp-credit style="text-align:center;padding:16px 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;color:inherit"><a href="https://simplepath.ai/?utm_source=customer-site&utm_medium=referral&utm_campaign=made-with" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Made with <strong style="font-weight:600">SimplePath</strong></a></div>
 </body>

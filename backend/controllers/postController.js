@@ -231,10 +231,37 @@ const post = await Post.findById(id);
     }
 };
 
+// ==============================
+// GET MY POSTS
+// ==============================
+const getMyPosts = async (req, res) => {
+    try {
+        const posts = await Post.find({
+            author: req.user.id
+        })
+        .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            count: posts.length,
+            posts
+        });
+
+    } catch (error) {
+        console.error("Get my posts error:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
 module.exports = {
     createPost,
     getPosts,
     getPostBySlug,
     updatePost,
-    deletePost
+    deletePost,
+    getMyPosts
 };
